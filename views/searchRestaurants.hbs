@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurant Search</title>
+    <style>
+        .restaurant-list {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        .restaurant {
+            border: 1px solid #ddd;
+            margin-bottom: 1em;
+            padding: 0.5em;
+        }
+
+        .restaurant h2 {
+            margin-top: 0;
+        }
+
+        .restaurant ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .restaurant li {
+            padding: 0.25em 0;
+        }
+
+        .grades {
+            margin-top: 1em;
+            padding: 0.5em;
+            background-color: #f7f7f7;
+        }
+
+        .grades ul {
+            padding-left: 0;
+        }
+
+        .grades li {
+            padding: 0.25em 0;
+            font-style: italic;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Search for Restaurants</h1>
+    <form action="/api/restaurants" method="POST">
+        <label for="page">Page:</label>
+        <input type="number" id="page" name="page" required>
+        
+        <label for="perPage">Per Page:</label>
+        <input type="number" id="perPage" name="perPage" required>
+        
+        <label for="borough">Borough:</label>
+        <input type="text" id="borough" name="borough">
+        
+        <button type="submit">Search</button>
+    </form>
+
+    {{#if restaurants}}
+        <div class="restaurant-list">
+        {{#each restaurants}}
+            <div class="restaurant">
+                <h2>Name: {{this.name}}</h2>
+                <p>Address:</p>
+                <ul>
+                    <li>Building: {{this.address.building}}</li>
+                    <li>Street: {{this.address.street}}</li>
+                    <li>Zipcode: {{this.address.zipcode}}</li>
+                    <li>Coordinates: {{this.address.coord.[0]}}, {{this.address.coord.[1]}}</li>
+                </ul>
+                <p>Borough: {{this.borough}}</p>
+                <p>Cuisine: {{this.cuisine}}</p>
+                <div class="grades">
+                    <p>Grades:</p>
+                    <ul>
+                        {{#each this.grades}}
+                            <li>Date: {{this.date}}, Grade: {{this.grade}}, Score: {{this.score}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+    {{else}}
+        <p>No restaurants found.</p>
+    {{/if}}
+</body>
+</html>
