@@ -23,8 +23,8 @@ router.post('/api/restaurants', [
 
 // GET /api/restaurants - Get all restaurants with optional pagination and borough filtering
 router.get('/api/restaurants', [
-  query('page').optional().isNumeric(),
-  query('perPage').optional().isNumeric(),
+  query('page').not().isEmpty().withMessage('Page is required').isNumeric().withMessage('Page must be a number'),
+  query('perPage').not().isEmpty().withMessage('Per page is required').isNumeric().withMessage('Per page must be a number'),
   query('borough').optional().isString(),
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -32,7 +32,7 @@ router.get('/api/restaurants', [
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { page = 1, perPage = 10, borough } = req.query;
+  const { page, perPage, borough } = req.query;
   try {
     const restaurants = await db.getAllRestaurants(parseInt(page), parseInt(perPage), borough);
     res.status(200).json(restaurants);
@@ -42,16 +42,17 @@ router.get('/api/restaurants', [
 });
 
 // GET route to display the form
-router.get('/api/restaurants', (req, res) => {
-  res.render('searchRestaurants');
+router.get('/api/restaurants/form', (req, res) => {
+  res.render('searchRestaurants',{layout: false});
 });
 
 // POST route to handle form submission and display results
-router.post('/api/restaurants', async (req, res) => {
+router.post('/api/restaurants/form', async (req, res) => {
   try {
       const { page, perPage, borough } = req.body;
       const restaurants = await db.getAllRestaurants(parseInt(page), parseInt(perPage), borough);
-      res.render('searchRestaurants', { restaurants });
+      const plainRestaurants = restaurants.map(restaurant => restaurant.toObject());
+      res.render('searchRestaurants', { restaurants:plainRestaurants, layout: false });
   } catch (error) {
       res.status(500).send('Internal Server Error');
   }
