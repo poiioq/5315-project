@@ -5,6 +5,8 @@ const restaurantRoutes = require('./routes'); // Update the path to your routes 
 const db = require('./db');
 const appConfig = require("./package.json");
 const { engine } = require('express-handlebars');
+const Handlebars = require('handlebars');
+const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,7 +17,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
 // Set up Handlebars middleware
-app.engine('.hbs',engine({extname:'.hbs',defaultLayout: false}));
+// Set up Handlebars middleware with prototype access allowed
+app.engine('.hbs', engine({
+  extname: '.hbs',
+  defaultLayout: false,
+  handlebars: allowInsecurePrototypeAccess(Handlebars)
+}));
 app.set('view engine','.hbs');
 
 // Use the router for restaurant routes

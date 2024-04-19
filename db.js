@@ -16,11 +16,17 @@ const db = {
         const restaurant = new Restaurant(data);
         return await restaurant.save();
       },
-    getAllRestaurants: async (page, perPage, borough) => {
+    getAllRestaurants: async (page, perPage, searchParams) => {
         let query = {};
-        if (borough) {
-            query.borough = borough;
+        if (searchParams.borough) {
+          query.borough = searchParams.borough;
         }
+        if (searchParams.name) {
+          query.name = searchParams.name;
+      }
+      if (searchParams.cuisine) {
+          query.cuisine = searchParams.cuisine;
+      }
         const restaurants = await Restaurant.find(query)
             .sort({restaurant_id: 1})
             .skip((page-1)*perPage)
